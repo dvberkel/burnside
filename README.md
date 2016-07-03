@@ -1,2 +1,2 @@
-# burnside
+# Burnside
 Counting with Burnsides Theorem
