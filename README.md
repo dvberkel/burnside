@@ -20,14 +20,14 @@ Order(cube);
 
 One way we could represent a coloring of the vertices of the cube by black and
 white is as a subset of the set `\{1, 2, 3, 4, 5, 6, 7, 8\}`. E.g. the subset
-\{1, 2, 3, 4\} indicates that the vertices in the top face are colored white,
+`\{1, 2, 3, 4\}` indicates that the vertices in the top face are colored white,
 while all the rest are colored black.
 
 The [power set][power-set] of a set `S` is the set of all subsets of `S`. We can
 calculate it with the `Combinations` command.
 
 ```gap
-colorings := Combinations([1, 2, 3, 4, 5, 6, 7, 8]);
+colorings := Combinations([1..8]);
 ```
 
 Because each vertex has two choices we expect `2^8 = 256` colorings.
