@@ -52,6 +52,39 @@ Size(orbits);
 This tells us that there are `23` different black and white colorings of the
 vertices of a cube.
 
+We want to reproduce this result by using Burnside's lemma. For this we need to
+figure out the image of a coloring under a group element. This is achieved with
+the `OnSets` acting function.
+
+```gap
+image := OnSets([1, 2, 3], cube.1);
+```
+
+Burnside's lemma equates the number of orbits with the average number of
+colorings fixed by a permutation. Let's create a function for that
+
+```gap
+IsFixed := function(omega, g)
+    return OnSets(omega, g) = omega;
+end;
+```
+
+We can use `IsFixed` to filter all the colorings that are fixed by a
+permutation.
+
+```gap
+fixed := Filtered(colorings, \c -> IsFixed(c, cube.1));
+```
+
+We need the size of these fixed colorings and sum them for each permutation in
+the group. This sum should be averaged with the group order.
+
+```gap
+orbitCount := 1/Order(cube) * Sum(List(Elements(cube), \g -> Size(Filtered(colorings, \c -> IsFixed(c, g)))));
+```
+
+This answer agrees with the direct calculation.
+
 [burnside]: https://en.wikipedia.org/wiki/Burnside's_lemma
 [group-action]: https://en.wikipedia.org/wiki/Group_action
 [power-set]: https://en.wikipedia.org/wiki/Power_set 
