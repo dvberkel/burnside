@@ -28,9 +28,10 @@ rest are colored black. We can calculate it with the following combination of
 functions. 
 
 ```gap
+degree := 8;
 colorings := Filtered(
-  Combinations(Cartesian([1..8], ["b","w"]), 3)
-, \c -> Size(Set(List(c, \a -> a[1]))) = 8
+  Combinations(Cartesian([1..degree], ["b","w"]), degree)
+, \c -> Size(Set(List(c, \a -> a[1]))) = degree
 );
 ```
   
