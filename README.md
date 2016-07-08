@@ -19,17 +19,21 @@ Order(cube);
 ```
 
 One way we could represent a coloring of the vertices of the cube by black and
-white is as a subset of the set `\{1, 2, 3, 4, 5, 6, 7, 8\}`. E.g. the subset
-`\{1, 2, 3, 4\}` indicates that the vertices in the top face are colored white,
-while all the rest are colored black.
-
-The [power set][power-set] of a set `S` is the set of all subsets of `S`. We can
-calculate it with the `Combinations` command.
+white is as a function from the set `{1, 2, 3, 4, 5, 6, 7, 8}` to the set
+`{"b", "w"}`. Functions are represented as special subsets of the Cartesian
+product of the two sets. E.g. the function
+`{(1,"w"), (2,"w"), (3,"w"), (4,"w"), (5,"b"), (6,"b"), (7,"b"), (8,"b")}`
+indicates that the vertices in the top face are colored white, while all the
+rest are colored black. We can calculate it with the following combination of
+functions. 
 
 ```gap
-colorings := Combinations([1..8]);
+colorings := Filtered(
+  Combinations(Cartesian([1..8], ["b","w"]), 3)
+, \c -> Size(Set(List(c, \a -> a[1]))) = 8
+);
 ```
-
+  
 Because each vertex has two choices we expect `2^8 = 256` colorings.
 
 ```gap
@@ -44,8 +48,22 @@ Knowing the number of orbits this actions has is knowing the number of different
 colorings. Because the group and the G-set are both small, we can calculate it
 directly.
 
+For this we need to tell GAP how to compute the action. We will define the
+`OnFunctions` function for this
+
 ```gap
-orbits := Orbits(cube, colorings, OnSets);
+OnFunctions := function(omega, g)
+  local result;
+  result := List(omega, t -> [t[1]^g, t[2]]);
+  SortBy(result, t -> t[1]);
+  return result;
+end;
+```
+
+with this we find
+
+```gap
+orbits := Orbits(cube, colorings, OnFunctions);
 Size(orbits);
 ```
 
@@ -57,7 +75,16 @@ figure out the image of a coloring under a group element. This is achieved with
 the `OnSets` acting function.
 
 ```gap
-image := OnSets([1, 2, 3], cube.1);
+image := OnFunctions([
+    [1, "w"],
+    [2, "w"],
+    [3, "w"],
+    [4, "b"],
+    [5, "b"],
+    [6, "b"],
+    [7, "b"],
+    [8, "b"],
+], cube.1);
 ```
 
 Burnside's lemma equates the number of orbits with the average number of
@@ -65,7 +92,7 @@ colorings fixed by a permutation. Let's create a function for that
 
 ```gap
 IsFixed := function(omega, g)
-    return OnSets(omega, g) = omega;
+    return OnFunctions(omega, g) = omega;
 end;
 ```
 
